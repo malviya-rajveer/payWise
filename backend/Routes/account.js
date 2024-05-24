@@ -7,18 +7,22 @@ const router = express.Router()
 
 router.get("/balance" , authMiddleware , async (req,res)=>{
 
-
+    const UserName = await User.findOne({
+        _id : req.userId
+    })
     const account = await Account.findOne({
         userId : req.userId
     })
 
     res.json({
-        balance : account.balance
+        balance : account.balance,
+        name : UserName.firstname
     })
 }) 
 
 router.post("/transfer" , authMiddleware , async (req,res)=>{
     
+  try{
     const session = await mongoose.startSession();
 
 
@@ -51,6 +55,11 @@ router.post("/transfer" , authMiddleware , async (req,res)=>{
     res.json({
         message: "Transfer successful"
     });     
+  } catch(err){
+        res.json({
+            message: "Insufficient balance"
+  })
+  }
 
 }) 
 

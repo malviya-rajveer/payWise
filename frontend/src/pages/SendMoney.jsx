@@ -1,12 +1,13 @@
 import { useState } from "react";
-import { useSearchParams } from "react-router-dom"
+import { Navigate, useSearchParams } from "react-router-dom"
 import axios from "axios";
 export const SendMoney = () => {
     const [searchParams] = useSearchParams();
     const name = searchParams.get("name")
     const id = searchParams.get("id")
     const [amount , setAmount] = useState(0)
-
+    const [transfer , setTransfer] = useState("")
+    
     return <div class="flex justify-center h-screen bg-slate-900">
         <div className="h-full flex flex-col justify-center">
             <div
@@ -41,8 +42,8 @@ export const SendMoney = () => {
                     />
         
                     </div>
-                    <button onClick={(e)=>{
-                        axios.post("http://localhost:3000/api/v1/account/transfer",{
+                    <button onClick={async (e)=>{
+                      const response = await axios.post("http://localhost:3000/api/v1/account/transfer",{
                             to: id,
                             amount 
                         },{
@@ -50,9 +51,14 @@ export const SendMoney = () => {
                                 Authorization : "Bearer " + localStorage.getItem("token")
                             } 
                         })
+                        setTransfer(response.data.message)
+                        
                     }} class="justify-center rounded-md text-sm font-medium ring-offset-background transition-colors h-10 px-4 py-2 w-full bg-green-500 text-white">
                         Initiate Transfer
                     </button>
+                    <div className="justify-center  text-lg  ring-offset-background transition-colors h-10 px-[70px] py-2 w-full">
+                    {transfer}
+                    </div>
                 </div>
                 </div>
         </div>
